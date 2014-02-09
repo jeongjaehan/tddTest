@@ -30,9 +30,14 @@ public class CalcTest {
 		assertThat(ret, is(25));
 	}
 	
-	@Test public void testFileReadSum() throws IOException {
-		Integer ret = calc.fileReadSum(this.numFilePath);
+	@Test public void testFileReadIntegerSum() throws IOException {
+		Integer ret = calc.fileReadIntegerSum(this.numFilePath);
 		assertThat(ret, is(9));
+	}
+	
+	@Test public void testFileReadStringSum() throws IOException {
+		String ret = calc.fileReadStringSum(this.numFilePath);
+		assertThat(ret, is("135"));
 	}
 
 }

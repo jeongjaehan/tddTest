@@ -50,44 +50,57 @@ public class Calc {
 	}
 
 	/**
-	 * 파일 라인 읽어 더하기 연산
+	 * 파일 라인 읽어  Integer 더하기
 	 * @param args
 	 * @return
 	 */
-	public int fileReadSum(String filepath) throws IOException{
-		BufferedReaderCallback sumCallback = 
-			new BufferedReaderCallback() {
-				public Integer doSomethingWithReader(BufferedReader br) throws IOException {
-					Integer sum = 0;
-					String line = null;
-					
-					while((line = br.readLine()) != null){
-						sum += Integer.valueOf(line);
-					}
-					
-					return sum;
-				}
-		};
-		
-		return fileReadTemplate(filepath, sumCallback);
+	public int fileReadIntegerSum(String filepath) throws IOException{
+		LineCallback<Integer> sumCallback = new LineCallback<Integer>() {
+			public Integer doSomethingWithLine(String line, Integer value) {
+				return value + Integer.valueOf(line);
+			}
+		}; 
+			
+		return lineReadTemplate(filepath, sumCallback, 0);
 
 	}
+	
+	/**
+	 * 파일 라인 읽어 String 더하기
+	 * @param args
+	 * @return
+	 */
+	public String fileReadStringSum(String filepath) throws IOException{
+		LineCallback<String> sumCallback = new LineCallback<String>() {
+			public String doSomethingWithLine(String line, String value) {
+				return value + Integer.valueOf(line);
+			}
+		}; 
+		
+		return lineReadTemplate(filepath, sumCallback, "");
+		
+	}
+
 
 	/**
-	 * 템플릿
+	 * 파일을 라인 단위로 읽어 들여 콜백을 수행하는 템플릿 메서드 (콜백은 함수에서 DI)
 	 * @param filepath
 	 * @param callback
 	 * @return
 	 * @throws IOException
 	 */
-	public Integer fileReadTemplate(String filepath, BufferedReaderCallback callback) throws IOException{
+	public <T> T lineReadTemplate(String filepath, LineCallback<T> callback, T initVal) throws IOException{
 		BufferedReader br = null;
 
 		try {
 			br = new BufferedReader(new  FileReader(filepath));
-			Integer ret = callback.doSomethingWithReader(br);
-
-			return ret;
+			T res = initVal;
+			String line = null;
+			
+			while((line = br.readLine()) != null){
+				res = callback.doSomethingWithLine(line, res);
+			}
+			return res;
 
 		} catch (IOException e) {
 			e.printStackTrace();
